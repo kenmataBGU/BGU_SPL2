@@ -6,18 +6,57 @@ public class SharedMatrix {
 
     public SharedMatrix() {
         // TODO: initialize empty matrix
+        this.vectors = new SharedVector[0];
     }
 
     public SharedMatrix(double[][] matrix) {
         // TODO: construct matrix as row-major SharedVectors
+        loadRowMajor(matrix);
     }
 
     public void loadRowMajor(double[][] matrix) {
         // TODO: replace internal data with new row-major matrix
+
+        // Handles null pointers gracefully by defaulting to  initializing it as an empty matrix
+        if (matrix == null) {
+            this.vectors = new SharedVector[0];
+            return;
+        }
+
+        // Creating ROW_MAJOR matrix
+        int len = matrix.length;
+        SharedVector[] tmpMatrix = new SharedVector[len];
+
+        for (int i = 0; i < len; i++) {
+            tmpMatrix[i] = new SharedVector(matrix[i], VectorOrientation.ROW_MAJOR);
+        }
+
+        this.vectors = tmpMatrix;
     }
 
     public void loadColumnMajor(double[][] matrix) {
         // TODO: replace internal data with new column-major matrix
+
+        // Handles null pointers gracefully by defaulting to  initializing it as an empty matrix
+        if (matrix == null) {
+            this.vectors = new SharedVector[0];
+            return;
+        }
+
+        // Creating COLUMN_MAJOR matrix
+        int mlen = matrix[0].length;
+        int vlen = matrix.length;
+        SharedVector[] tmpMatrix = new SharedVector[mlen];
+
+        for (int i = 0; i < mlen; i++) {
+            double[] tmpVector = new double[vlen];
+            for (int j = 0; j < vlen; j++) {
+                tmpVector[j] = matrix[j][i];
+            }
+
+            tmpMatrix[i] = new SharedVector(tmpVector, VectorOrientation.COLUMN_MAJOR);
+        }
+        this.vectors = tmpMatrix;
     }
 
     public double[][] readRowMajor() {
