@@ -32,7 +32,13 @@ public class SharedVector {
 
     public int length() {
         // return vector length
-        return vector.length;
+        readLock();
+        try {
+            return vector.length;
+        }
+        finally {
+            readUnlock();
+        }
     }
 
     public VectorOrientation getOrientation() {
@@ -123,16 +129,61 @@ public class SharedVector {
         finally {
             this.writeUnlock();
         }
-
     }
 
     public void negate() {
-        // TODO: negate vector
+        // negate vector
+        writeLock();
+        try {
+            for (int i = 0; i < vector.length; i++)
+                vector[i] *= -1;
+        }
+        finally {
+            writeUnlock();
+        }
     }
+
 
     public double dot(SharedVector other) {
         // TODO: compute dot product (row · column)
-        return 0;
+        if (other == null)
+            throw new IllegalArgumentException("other cannot be null");
+
+        // copy vectors with readLock to prevent deadlock
+        final double[] thisCopy;
+        final VectorOrientation thisOrientation;
+        this.readLock();
+        try {
+            thisCopy = this.vector.clone();
+            thisOrientation = this.orientation;
+        }
+        finally {
+            this.readUnlock();
+        }
+        final double[] otherCopy;
+        final VectorOrientation otherOrientation;
+        other.readLock();
+        try {
+            otherCopy = other.vector.clone();
+            otherOrientation = other.orientation;
+        }
+        finally {
+            other.readUnlock();
+        }
+
+        if (thisCopy.length != otherCopy.length)
+            throw new IllegalArgumentException("vector and other vector lengths do not match");
+
+        if (thisOrientation != VectorOrientation.ROW_MAJOR || otherOrientation != VectorOrientation.COLUMN_MAJOR)
+            throw new IllegalArgumentException("wrong orientations");
+
+        double sum = 0.0;
+        for (int i = 0; i < thisCopy.length; i++)
+            sum += thisCopy[i] * otherCopy[i];
+
+        return sum;
+
+
     }
 
     public void vecMatMul(SharedMatrix matrix) {
