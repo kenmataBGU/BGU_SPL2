@@ -109,8 +109,6 @@ public class SharedVector {
         final VectorOrientation otherOrientation;
         other.readLock();
         try {
-            if (this.vector.length != other.vector.length)
-                throw new IllegalArgumentException("vector and other vector lengths do not match");
             otherCopy = other.vector.clone();
             otherOrientation = other.orientation;
         }
@@ -121,6 +119,8 @@ public class SharedVector {
         // update this with writeLock
         this.writeLock();
         try {
+            if (this.vector.length != otherCopy.length)
+                throw new IllegalArgumentException("vector and other vector lengths do not match");
             if (this.orientation != otherOrientation)
                 throw new IllegalArgumentException("orientations do not match");
             for (int i = 0; i < vector.length; i++)
@@ -145,7 +145,7 @@ public class SharedVector {
 
 
     public double dot(SharedVector other) {
-        // TODO: compute dot product (row · column)
+        // compute dot product (row · column)
         if (other == null)
             throw new IllegalArgumentException("other cannot be null");
 
@@ -182,8 +182,6 @@ public class SharedVector {
             sum += thisCopy[i] * otherCopy[i];
 
         return sum;
-
-
     }
 
     public void vecMatMul(SharedMatrix matrix) {
