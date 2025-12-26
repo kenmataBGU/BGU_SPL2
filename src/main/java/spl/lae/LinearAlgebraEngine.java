@@ -9,20 +9,21 @@ import java.util.List;
 
 public class LinearAlgebraEngine {
 
-    // _____fields_____
+    /// ===== fields =====
     private SharedMatrix leftMatrix = new SharedMatrix();
     private SharedMatrix rightMatrix = new SharedMatrix();
     private TiredExecutor executor;
 
-    // _____constructor_____
+    /// ===== constructor =====
     public LinearAlgebraEngine(int numThreads) {
         if (numThreads < 1)
             throw new IllegalArgumentException("numThreads must be greater than 0");
         executor = new TiredExecutor(numThreads);
     }
 
-    // _____methods_____
-    // resolve computation tree step by step until the final matrix is produced
+    /// ===== methods =====
+    /** resolve computation tree step by step until the final matrix is produced
+     */
     public ComputationNode run(ComputationNode computationRoot) {
         if (computationRoot == null)
             throw new IllegalArgumentException("computationRoot must not be null");
@@ -50,21 +51,22 @@ public class LinearAlgebraEngine {
         return computationRoot;
     }
 
-    // load operand matrices, create compute tasks & submit tasks to executor
+    /** load operand matrices, create compute tasks & submit tasks to executor
+     */
     public void loadAndCompute(ComputationNode node) {
         // checks
         if (node == null || node.getNodeType() == ComputationNodeType.MATRIX)
-            throw new IllegalArgumentException("node must not be null or matrix");
+            throw new IllegalArgumentException("Illegal node: node must not be null or matrix");
 
         List<ComputationNode> children = node.getChildren();
         if (children == null || children.isEmpty())
-            throw new IllegalArgumentException("node must contain at least one child");
+            throw new IllegalArgumentException("Illegal node: node must contain at least one child");
 
         ComputationNodeType type = node.getNodeType();
         if ((type == ComputationNodeType.NEGATE || type == ComputationNodeType.TRANSPOSE) && children.size() != 1)
-            throw new IllegalArgumentException("node must contain exactly one child");
+            throw new IllegalArgumentException("Illegal node: node must contain exactly one child");
         if ((type == ComputationNodeType.ADD || type == ComputationNodeType.MULTIPLY) && children.size() != 2)
-            throw new IllegalArgumentException("node must contain exactly two children");
+            throw new IllegalArgumentException("Illegal node: node must contain exactly two children");
 
         // extract matrices and sizes
         double[][] M1 = children.get(0).getMatrix();
@@ -78,9 +80,9 @@ public class LinearAlgebraEngine {
 
         // check dimensions
         if (type == ComputationNodeType.ADD && (aRows != bRows || aCols != bCols))
-            throw new IllegalArgumentException("dimensions do not match");
+            throw new IllegalArgumentException("Illegal operation: dimensions mismatch");
         else if (type == ComputationNodeType.MULTIPLY && (aCols != bRows))
-            throw new IllegalArgumentException("dimensions do not match");
+            throw new IllegalArgumentException("Illegal operation: dimensions mismatch");
 
         // load matrices and create tasks
         List<Runnable> tasks;
@@ -106,7 +108,7 @@ public class LinearAlgebraEngine {
                 tasks = createTransposeTasks();
                 break;
             default:
-                throw new IllegalArgumentException("unknown computation node type");
+                throw new IllegalArgumentException("Illegal node: unknown computation node type");
         }
 
         // submit tasks and resolve
@@ -115,7 +117,8 @@ public class LinearAlgebraEngine {
         node.resolve(result);
     }
 
-    // return tasks that perform row-wise addition
+    /** return tasks that perform row-wise addition
+     */
     public List<Runnable> createAddTasks() {
         int rows = leftMatrix.length();
         List<Runnable> tasks = new ArrayList<>(rows);
@@ -130,7 +133,8 @@ public class LinearAlgebraEngine {
         return tasks;
     }
 
-    // return tasks that perform row × matrix multiplication
+    /** return tasks that perform row × matrix multiplication
+     */
     public List<Runnable> createMultiplyTasks() {
         int rows = leftMatrix.length();
         List<Runnable> tasks = new ArrayList<>(rows);
@@ -144,7 +148,8 @@ public class LinearAlgebraEngine {
         return tasks;
     }
 
-    // return tasks that negate rows
+    /** return tasks that negate rows
+     */
     public List<Runnable> createNegateTasks() {
         int rows = leftMatrix.length();
         List<Runnable> tasks = new ArrayList<>(rows);
@@ -158,7 +163,8 @@ public class LinearAlgebraEngine {
         return tasks;
     }
 
-    // return tasks that transpose rows
+    /** return tasks that transpose rows
+     */
     public List<Runnable> createTransposeTasks() {
         int vectors = leftMatrix.length();
         List<Runnable> tasks = new ArrayList<>(vectors);
@@ -172,7 +178,8 @@ public class LinearAlgebraEngine {
         return tasks;
     }
 
-    // return summary of worker activity
+    /** return summary of worker activity
+     */
     public String getWorkerReport() {
         return executor.getWorkerReport();
     }

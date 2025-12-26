@@ -4,13 +4,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 public class SharedVector {
 
-    // _____fields_____
+    /// ===== fields =====
     private double[] vector;
     private VectorOrientation orientation;
     private ReadWriteLock lock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
 
-    // _____constructor_____
+    /// ===== constructor =====
     public SharedVector(double[] vector, VectorOrientation orientation) {
         if (vector == null || orientation == null)
             throw new IllegalArgumentException("vector and orientation cannot be null");
@@ -18,8 +18,9 @@ public class SharedVector {
         this.orientation = orientation;
     }
 
-    // _____methods_____
-    // return element at index (read-locked)
+    /// ===== methods =====
+    /** return element at index (read-locked)
+     */
     public double get(int index) {
         readLock();
         try {
@@ -33,7 +34,8 @@ public class SharedVector {
 
     }
 
-    // return vector length
+    /** return vector length
+     */
     public int length() {
         readLock();
         try {
@@ -44,7 +46,8 @@ public class SharedVector {
         }
     }
 
-    // return vector orientation
+    /** return vector orientation
+     */
     public VectorOrientation getOrientation() {
         readLock();
         try {
@@ -55,27 +58,32 @@ public class SharedVector {
         }
     }
 
-    // acquire write lock
+    /** acquire write lock
+     */
     public void writeLock() {
         lock.writeLock().lock();
     }
 
-    // release write lock
+    /** release write lock
+     */
     public void writeUnlock() {
         lock.writeLock().unlock();
     }
 
-    // acquire read lock
+    /** acquire read lock
+     */
     public void readLock() {
         lock.readLock().lock();
     }
 
-    // release read lock
+    /** release read lock
+     */
     public void readUnlock() {
         lock.readLock().unlock();
     }
 
-    // transpose vector
+    /** transpose vector
+     */
     public void transpose() {
         writeLock();
         try {
@@ -89,7 +97,8 @@ public class SharedVector {
         }
     }
 
-    // add two vectors
+    /** add two vectors
+     */
     public void add(SharedVector other) {
         if (other == null)
             throw new IllegalArgumentException("other cannot be null");
@@ -144,7 +153,8 @@ public class SharedVector {
         }
     }
 
-    // negate vector
+    /** negate vector
+     */
     public void negate() {
         writeLock();
         try {
@@ -156,7 +166,8 @@ public class SharedVector {
         }
     }
 
-    // compute dot product (row · column)
+    /** compute dot product (row · column)
+     */
     public double dot(SharedVector other) {
         if (other == null)
             throw new IllegalArgumentException("other cannot be null");
@@ -214,7 +225,8 @@ public class SharedVector {
         }
     }
 
-    // compute row-vector × matrix
+    /** compute row-vector × matrix
+     */
     public void vecMatMul(SharedMatrix matrix) {
         if (matrix == null || matrix.length() == 0)
             throw new IllegalArgumentException("matrix cannot be null or empty");
