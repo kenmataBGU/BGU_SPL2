@@ -68,6 +68,10 @@ public class SharedMatrix {
             return empty_array;
         }
 
+        if (this.vectors == null) {
+            throw new IllegalArgumentException("Undefined, vector array is null.");
+        }
+
         // Returning ROW_MAJOR matrix is a doubles array
         int m = this.vectors.length;
         int n = this.vectors[0].length();
@@ -94,7 +98,7 @@ public class SharedMatrix {
     // ** Throws IllegalArgumentException when given empty matrix
     public VectorOrientation getOrientation() {
         // TODO: return orientation
-        if (this.vectors.length == 0) {
+        if (this.vectors == null || this.vectors.length == 0) {
             throw new IllegalArgumentException("Cannot determine orientation of empty matrix");
         }
         return this.vectors[0].getOrientation();
