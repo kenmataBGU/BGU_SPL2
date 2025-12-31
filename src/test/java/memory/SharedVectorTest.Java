@@ -7,9 +7,7 @@ class SharedVectorTest {
 
     private static final double EPS = 1e-9;
 
-    /**
-     * get tests
-     */
+    /// ===== get tests =====
     @Test
     void get_returnsCorrectElement() {
         SharedVector v = new SharedVector(new double[]{10.0, -2.5, 7.25}, VectorOrientation.ROW_MAJOR);
@@ -18,34 +16,35 @@ class SharedVectorTest {
         assertEquals(-2.5, v.get(1), EPS);
         assertEquals(7.25, v.get(2), EPS);
     }
+
     @Test
     void get_outOfBoundsNegative() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IndexOutOfBoundsException.class, () -> v.get(-1));
     }
+
     @Test
     void get_outOfBoundsLength() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IndexOutOfBoundsException.class, () -> v.get(3));
     }
 
-    /**
-     * length tests
-     */
+
+    /// ===== length tests =====
     @Test
     void length_returnsCorrectLength() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
         assertEquals(3, v.length());
     }
+
     @Test
     void length_emptyVector_returnsZero() {
         SharedVector v = new SharedVector(new double[]{}, VectorOrientation.ROW_MAJOR);
         assertEquals(0, v.length());
     }
 
-    /**
-     * getOrientation tests
-     */
+
+    /// ===== getOrientation tests =====
     @Test
     void getOrientation_returnsOrientationGiven() {
         SharedVector row = new SharedVector(new double[]{1.0}, VectorOrientation.ROW_MAJOR);
@@ -53,6 +52,7 @@ class SharedVectorTest {
         assertEquals(VectorOrientation.ROW_MAJOR, row.getOrientation());
         assertEquals(VectorOrientation.COLUMN_MAJOR, col.getOrientation());
     }
+
     @Test
     void getOrientation_changesAfterTranspose() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
@@ -61,15 +61,15 @@ class SharedVectorTest {
         assertEquals(VectorOrientation.COLUMN_MAJOR, v.getOrientation());
     }
 
-    /**
-     * transpose tests
-     */
+
+    /// ===== transpose tests =====
     @Test
     void transpose_togglesOrientationOnce() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         v.transpose();
         assertEquals(VectorOrientation.COLUMN_MAJOR, v.getOrientation());
     }
+
     @Test
     void transpose_returnsToOriginal() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.COLUMN_MAJOR);
@@ -77,6 +77,7 @@ class SharedVectorTest {
         v.transpose();
         assertEquals(VectorOrientation.COLUMN_MAJOR, v.getOrientation());
     }
+
     @Test
     void transpose_doesNotChangeVectorValues() {
         SharedVector v = new SharedVector(new double[]{10.0, -2.5, 7.25}, VectorOrientation.ROW_MAJOR);
@@ -91,14 +92,14 @@ class SharedVectorTest {
         assertEquals(a2, v.get(2), EPS);
     }
 
-    /**
-     * add tests
-     */
+
+    /// ===== add tests =====
     @Test
     void add_nullOther() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v.add(null));
     }
+
     @Test
     void add_self() {
         SharedVector v = new SharedVector(new double[]{1.0, -3.0, 2.5}, VectorOrientation.ROW_MAJOR);
@@ -107,18 +108,21 @@ class SharedVectorTest {
         assertEquals(-6.0, v.get(1), EPS);
         assertEquals(5.0, v.get(2), EPS);
     }
+
     @Test
     void add_lengthMismatch() {
         SharedVector v1 = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         SharedVector v2 = new SharedVector(new double[]{3.0, 4.0, 5.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v1.add(v2));
     }
+
     @Test
     void add_orientationMismatch() {
         SharedVector v1 = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         SharedVector v2 = new SharedVector(new double[]{3.0, 4.0}, VectorOrientation.COLUMN_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v1.add(v2));
     }
+
     @Test
     void add_valid() {
         SharedVector v1 = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
@@ -135,6 +139,7 @@ class SharedVectorTest {
         assertEquals(-2.0, v2.get(1), EPS);
         assertEquals(0.5, v2.get(2), EPS);
     }
+
     @Test
     void add_ColumnMajor() {
         SharedVector v1 = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.COLUMN_MAJOR);
@@ -145,9 +150,8 @@ class SharedVectorTest {
         assertEquals(6.0, v1.get(1), EPS);
     }
 
-    /**
-     * negate tests
-     */
+
+    /// ===== negate tests =====
     @Test
     void negate_valid() {
         SharedVector v = new SharedVector(new double[]{1.5, -2.0, 0.0}, VectorOrientation.ROW_MAJOR);
@@ -156,6 +160,7 @@ class SharedVectorTest {
         assertEquals(2.0, v.get(1), EPS);
         assertEquals(-0.0, v.get(2), EPS);
     }
+
     @Test
     void negate_returnsOriginalValues() {
         SharedVector v = new SharedVector(new double[]{3.0, -4.5}, VectorOrientation.COLUMN_MAJOR);
@@ -166,6 +171,7 @@ class SharedVectorTest {
         assertEquals(a0, v.get(0), EPS);
         assertEquals(a1, v.get(1), EPS);
     }
+
     @Test
     void negate_doesNotChangeOrientation() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
@@ -173,32 +179,35 @@ class SharedVectorTest {
         assertEquals(VectorOrientation.ROW_MAJOR, v.getOrientation());
     }
 
-    /**
-     * dot tests
-     */
+
+    /// ===== dot tests =====
     @Test
     void dot_nullOther() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v.dot(null));
     }
+
     @Test
     void dot_self() {
         SharedVector v = new SharedVector(new double[]{2.0, -3.0, 1.0}, VectorOrientation.ROW_MAJOR);
         double res = v.dot(v);
         assertEquals(14.0, res, EPS);
     }
+
     @Test
     void dot_lengthMismatch() {
         SharedVector row = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         SharedVector col = new SharedVector(new double[]{3.0, 4.0, 5.0}, VectorOrientation.COLUMN_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> row.dot(col));
     }
+
     @Test
     void dot_sameOrientation() {
         SharedVector v1 = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.ROW_MAJOR);
         SharedVector v2 = new SharedVector(new double[]{3.0, 4.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v1.dot(v2));
     }
+
     @Test
     void dot_rowDotCol() {
         SharedVector row = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
@@ -206,6 +215,7 @@ class SharedVectorTest {
         double res = row.dot(col);
         assertEquals(9.5, res, EPS);
     }
+
     @Test
     void dot_colDotRow() {
         SharedVector col = new SharedVector(new double[]{10.0, -1.0, 0.5}, VectorOrientation.COLUMN_MAJOR);
@@ -214,32 +224,35 @@ class SharedVectorTest {
         assertEquals(9.5, res, EPS);
     }
 
-    /**
-     * vecMatMul tests
-     */
+
+    /// ===== vecMatMul tests =====
     @Test
     void vecMatMul_nullMatrix() {
         SharedVector v = new SharedVector(new double[]{1.0}, VectorOrientation.ROW_MAJOR);
         assertThrows(IllegalArgumentException.class, () -> v.vecMatMul(null));
     }
+
     @Test
     void vecMatMul_emptyMatrix() {
         SharedVector v = new SharedVector(new double[]{1.0}, VectorOrientation.ROW_MAJOR);
         SharedMatrix m = new SharedMatrix();
         assertThrows(IllegalArgumentException.class, () -> v.vecMatMul(m));
     }
+
     @Test
     void vecMatMul_vectorNotRowMajor() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0}, VectorOrientation.COLUMN_MAJOR);
         SharedMatrix m = new SharedMatrix(new double[][]{{1.0}, {2.0}});
         assertThrows(IllegalArgumentException.class, () -> v.vecMatMul(m));
     }
+
     @Test
     void vecMatMul_lengthMismatch() {
         SharedVector v = new SharedVector(new double[]{1.0, 2.0, 3.0}, VectorOrientation.ROW_MAJOR);
         SharedMatrix m = new SharedMatrix(new double[][]{{1.0, 0.0}, {0.0, 1.0}});
         assertThrows(IllegalArgumentException.class, () -> v.vecMatMul(m));
     }
+
     @Test
     void vecMatMul_rowMajorMatrix() {
         SharedVector v = new SharedVector(new double[]{2.0, 3.0}, VectorOrientation.ROW_MAJOR);
@@ -255,6 +268,7 @@ class SharedVectorTest {
         assertEquals(16.0, v.get(2), EPS);
         assertEquals(VectorOrientation.ROW_MAJOR, v.getOrientation());
     }
+
     @Test
     void vecMatMul_columnMajorMatrix() {
         SharedVector v = new SharedVector(new double[]{2.0, 3.0}, VectorOrientation.ROW_MAJOR);
@@ -272,6 +286,7 @@ class SharedVectorTest {
         assertEquals(16.0, v.get(2), EPS);
         assertEquals(VectorOrientation.ROW_MAJOR, v.getOrientation());
     }
+
     @Test
     void vecMatMul_identityMatrix() {
         SharedVector v = new SharedVector(new double[]{5.0, -2.0}, VectorOrientation.ROW_MAJOR);
@@ -285,6 +300,7 @@ class SharedVectorTest {
         assertEquals(5.0, v.get(0), EPS);
         assertEquals(-2.0, v.get(1), EPS);
     }
+
     @Test
     void vecMatMul_zeroVector() {
         SharedVector v = new SharedVector(new double[]{0.0, 0.0}, VectorOrientation.ROW_MAJOR);
