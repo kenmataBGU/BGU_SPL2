@@ -3,7 +3,7 @@ package memory;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class SharedVectorTest {
+class mSharedVectorTest {
 
     private static final double EPS = 1e-9;
 

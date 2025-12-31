@@ -11,7 +11,16 @@ public class SharedMatrix {
 
     public SharedMatrix(double[][] matrix) {
         // TODO: construct matrix as row-major SharedVectors
-        loadRowMajor(matrix);
+        if (matrix == null) {
+            throw new IllegalArgumentException("Error: null matrix");
+        }
+
+        int len = matrix.length;
+        this.vectors = new SharedVector[len];
+        for (int i = 0; i < len; i++) {
+            this.vectors[i] = new SharedVector(matrix[i], VectorOrientation.ROW_MAJOR);
+        }
+
     }
 
     public void loadRowMajor(double[][] matrix) {
@@ -19,8 +28,7 @@ public class SharedMatrix {
 
         // Handles null pointers gracefully by defaulting to  initializing it as an empty matrix
         if (matrix == null) {
-            this.vectors = new SharedVector[0];
-            return;
+            throw new IllegalArgumentException("Error: null matrix");
         }
 
         // Creating ROW_MAJOR matrix
@@ -39,8 +47,7 @@ public class SharedMatrix {
 
         // Handles null pointers gracefully by defaulting to  initializing it as an empty matrix
         if (matrix == null) {
-            this.vectors = new SharedVector[0];
-            return;
+            throw new IllegalArgumentException("Error: null matrix");
         }
 
         // Creating COLUMN_MAJOR matrix
@@ -64,7 +71,7 @@ public class SharedMatrix {
 
         // Handling cast of an empty matrix
         if (this.vectors.length == 0) {
-            double[][] empty_array = {};
+            double[][] empty_array = new double[0][0];
             return empty_array;
         }
 
@@ -72,17 +79,41 @@ public class SharedMatrix {
             throw new IllegalArgumentException("Undefined, vector array is null.");
         }
 
-        // Returning ROW_MAJOR matrix is a doubles array
-        int m = this.vectors.length;
-        int n = this.vectors[0].length();
-        double[][] ret = new double[m][n];
-        for (int i = 0; i < m; i++){
-            for (int j = 0; j < n; j++) {
-                ret[i][j] = this.vectors[i].get(j);
+        // Acquire all read locks
+        this.acquireAllVectorReadLocks(this.vectors);
+
+
+        try {
+        // If the matrix is stored as a row major:
+            if (this.vectors[0].getOrientation() == VectorOrientation.ROW_MAJOR) {
+                int m = this.vectors.length;
+                int n = this.vectors[0].length();
+                double[][] ret = new double[m][n];
+                for (int i = 0; i < m; i++){
+                    for (int j = 0; j < n; j++) {
+                        ret[i][j] = this.vectors[i].get(j);
+                    }
+                }
+                return ret;
+            }
+
+            // If the matrix is stored as a column major:
+            else {
+                int m = this.vectors[0].length();
+                int n = this.vectors.length;
+                double[][] ret = new double[m][n];
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < m; j++) {
+                        ret[j][i] = this.vectors[i].get(j);
+                    }
+                }
+                return ret;
             }
         }
-
-        return ret;
+        // Release all read locks
+        finally {
+            this.releaseAllVectorReadLocks(this.vectors);
+        }
     }
 
     public SharedVector get(int index) {
