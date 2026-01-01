@@ -25,6 +25,29 @@ public class TiredThreadTest {
     }
 
     @Test
+    void testShutdown() throws InterruptedException {
+        // Initiate new worker
+        worker = new TiredThread(1, 1.0);
+        worker.start();
+
+        // Testing worker shutdown
+        worker.shutdown();
+        worker.join(1000);
+        assertTrue(!worker.isAlive());
+    }
+
+    @Test
+    void testInitStatus() {
+        // Initiate new worker
+        worker = new TiredThread(1, 1.0);
+        worker.start();
+
+        // Testing stats
+        assertEquals(0,worker.getTimeUsed());
+        assertEquals(0, worker.getFatigue());
+    }
+
+    @Test
     void testTasks() throws InterruptedException {
         // Initiate lock and flag
         AtomicBoolean flag = new AtomicBoolean(false);
