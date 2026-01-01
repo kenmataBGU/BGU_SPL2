@@ -38,9 +38,15 @@ public class TiredExecutor {
                 } finally {
                     idleMinHeap.add(worker);
                     inFlight.decrementAndGet();
+                    synchronized(this) {
+                        this.notifyAll();
+                    }
                 }
             };
+
+            // Hand the worker the wrapped task
             worker.newTask(task_wrapper);
+
         } catch(InterruptedException e){
             Thread.currentThread().interrupt();
         }
@@ -55,8 +61,14 @@ public class TiredExecutor {
         }
 
         // Wait for all tasks to finish
-        while (inFlight.get() > 0) {
-            Thread.currentThread().yield();
+        synchronized(this) {
+            while (inFlight.get() > 0) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
 
@@ -65,6 +77,11 @@ public class TiredExecutor {
         // Goes through all workers and shuts them down
         for (TiredThread worker : workers) {
             worker.shutdown();
+        }
+
+        // Waiting for all workers to finish
+        for(TiredThread worker: workers) {
+            worker.join();
         }
     }
 
