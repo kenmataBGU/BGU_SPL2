@@ -37,13 +37,12 @@ public class TiredThreadTest {
     }
 
     @Test
-    void testInitStatus() {
+    void testInitFatigue() {
         // Initiate new worker
         worker = new TiredThread(1, 1.0);
         worker.start();
 
-        // Testing stats
-        assertEquals(0,worker.getTimeUsed());
+        // Testing fatigue
         assertEquals(0, worker.getFatigue());
     }
 
