@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-public class TiredThreadTest {
+class TiredThreadTest {
 
     private TiredThread worker;
     // worker = new TiredThread(1, 1.0);
