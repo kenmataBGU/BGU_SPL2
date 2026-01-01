@@ -28,8 +28,8 @@ public class TiredExecutor {
     public void submit(Runnable task) {
         // TODO
         try {
-            inFlight.incrementAndGet();
             TiredThread worker = idleMinHeap.take();
+            inFlight.incrementAndGet();
 
             // Creates a task wrapper
             Runnable task_wrapper = () -> {
