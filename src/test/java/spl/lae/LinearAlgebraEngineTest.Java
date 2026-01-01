@@ -68,7 +68,8 @@ class LinearAlgebraEngineRunTest {
     void run_transpose() {
         LinearAlgebraEngine lae = new LinearAlgebraEngine(2);
 
-        ComputationNode a = new ComputationNode(new double[][]{{1, 2, 3}, {4, 5, 6}});
+        double[][] A = {{1, 2, 3}, {4, 5, 6}};
+        ComputationNode a = new ComputationNode(A);
         ComputationNode root = new ComputationNode("T", List.of(a));
         ComputationNode out = lae.run(root);
 

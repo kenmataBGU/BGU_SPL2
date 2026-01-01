@@ -28,7 +28,8 @@ public class SharedMatrix {
 
         // Handles null pointers gracefully by defaulting to  initializing it as an empty matrix
         if (matrix == null) {
-            throw new IllegalArgumentException("Error: null matrix");
+            this.vectors = new SharedVector[0];
+            return;
         }
 
         // Creating ROW_MAJOR matrix
